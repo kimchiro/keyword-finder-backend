@@ -5,7 +5,18 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const app_module_1 = require("./app.module");
 const app_config_1 = require("./config/app.config");
+const data_source_1 = require("./config/data-source");
 async function bootstrap() {
+    try {
+        console.log('🔄 데이터베이스 마이그레이션을 실행합니다...');
+        await data_source_1.AppDataSource.initialize();
+        await data_source_1.AppDataSource.runMigrations();
+        console.log('✅ 데이터베이스 마이그레이션이 완료되었습니다.');
+    }
+    catch (error) {
+        console.error('❌ 데이터베이스 마이그레이션 실패:', error);
+        process.exit(1);
+    }
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     const appConfig = app.get(app_config_1.AppConfigService);
     appConfig.validateAllConfigs();
