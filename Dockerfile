@@ -16,8 +16,8 @@ COPY . .
 # TypeScript 빌드
 RUN npm run build
 
-# 프로덕션 이미지
-FROM node:20-alpine AS production
+# 프로덕션 이미지 (Ubuntu 기반으로 변경)
+FROM node:20-slim AS production
 
 # 작업 디렉토리 설정
 WORKDIR /app
@@ -31,8 +31,8 @@ RUN npm ci --omit=dev && npm cache clean --force
 # 빌드된 파일 복사
 COPY --from=builder /app/dist ./dist
 
-# Playwright 브라우저 설치 (Alpine Linux 호환)
-RUN npx playwright install chromium || echo "Playwright installation failed, continuing..."
+# Playwright 브라우저 설치 (Ubuntu 기반)
+RUN npx playwright install chromium --with-deps
 
 # 포트 노출
 EXPOSE 3001
