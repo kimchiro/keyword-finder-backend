@@ -43,7 +43,7 @@ __decorate([
 ], MonthlySearchRatios.prototype, "searchRatio", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '분석 연도' }),
-    (0, typeorm_1.Column)({ name: 'analysis_year', type: 'year' }),
+    (0, typeorm_1.Column)({ name: 'analysis_year', type: 'int' }),
     __metadata("design:type", Number)
 ], MonthlySearchRatios.prototype, "analysisYear", void 0);
 __decorate([

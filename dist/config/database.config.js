@@ -24,13 +24,12 @@ let DatabaseConfig = class DatabaseConfig {
     }
     createTypeOrmOptions() {
         return {
-            type: 'mysql',
-            host: this.configService.get('MYSQL_HOST', 'localhost'),
-            port: this.configService.get('MYSQL_PORT', 3306),
-            username: this.configService.get('MYSQL_USER', 'root'),
-            password: this.configService.get('MYSQL_PASSWORD'),
-            database: this.configService.get('MYSQL_DATABASE', 'keyword_finder'),
-            charset: 'utf8mb4',
+            type: 'postgres',
+            host: this.configService.get('DB_HOST', 'localhost'),
+            port: this.configService.get('DB_PORT', 5432),
+            username: this.configService.get('DB_USERNAME', 'postgres'),
+            password: this.configService.get('DB_PASSWORD'),
+            database: this.configService.get('DB_DATABASE', 'keyword_finder'),
             entities: [
                 keyword_entity_1.Keyword,
                 keyword_analytics_entity_1.KeywordAnalytics,
@@ -40,7 +39,7 @@ let DatabaseConfig = class DatabaseConfig {
                 keyword_collection_logs_entity_1.KeywordCollectionLogs,
             ],
             migrations: ['dist/database/migrations/*.js'],
-            migrationsRun: false,
+            migrationsRun: true,
             synchronize: false,
             logging: this.configService.get('NODE_ENV') === 'development',
         };

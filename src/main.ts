@@ -3,8 +3,20 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { AppConfigService } from './config/app.config';
+import { AppDataSource } from './config/data-source';
 
 async function bootstrap() {
+  // 데이터베이스 마이그레이션 실행
+  try {
+    console.log('🔄 데이터베이스 마이그레이션을 실행합니다...');
+    await AppDataSource.initialize();
+    await AppDataSource.runMigrations();
+    console.log('✅ 데이터베이스 마이그레이션이 완료되었습니다.');
+  } catch (error) {
+    console.error('❌ 데이터베이스 마이그레이션 실패:', error);
+    process.exit(1);
+  }
+
   const app = await NestFactory.create(AppModule);
 
   // 설정 검증 수행

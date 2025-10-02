@@ -29,7 +29,7 @@ export class DatabaseConfig implements TypeOrmOptionsFactory {
         KeywordCollectionLogs,
       ],
       migrations: ['dist/database/migrations/*.js'],
-      migrationsRun: false,
+      migrationsRun: true,
       synchronize: false,
       logging: this.configService.get('NODE_ENV') === 'development',
     };
