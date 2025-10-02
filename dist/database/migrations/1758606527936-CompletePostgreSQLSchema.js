@@ -1,12 +1,12 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
-
-export class PostgreSQLSchema1758606527934 implements MigrationInterface {
-    name = 'PostgreSQLSchema1758606527934'
-
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        console.log('🔄 PostgreSQL 데이터베이스 스키마를 생성합니다...');
-
-        // 1. Keywords 테이블 생성
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CompletePostgreSQLSchema1758606527936 = void 0;
+class CompletePostgreSQLSchema1758606527936 {
+    constructor() {
+        this.name = 'CompletePostgreSQLSchema1758606527936';
+    }
+    async up(queryRunner) {
+        console.log('🔄 완전한 PostgreSQL 데이터베이스 스키마를 생성합니다...');
         await queryRunner.query(`
             CREATE TABLE IF NOT EXISTS keywords (
                 id SERIAL PRIMARY KEY,
@@ -17,8 +17,6 @@ export class PostgreSQLSchema1758606527934 implements MigrationInterface {
                 CONSTRAINT UQ_keyword UNIQUE (keyword)
             )
         `);
-
-        // 2. Keyword Analytics 테이블 생성
         await queryRunner.query(`
             CREATE TABLE IF NOT EXISTS keyword_analytics (
                 id SERIAL PRIMARY KEY,
@@ -41,8 +39,6 @@ export class PostgreSQLSchema1758606527934 implements MigrationInterface {
                 CONSTRAINT FK_keyword_analytics_keyword_id FOREIGN KEY (keyword_id) REFERENCES keywords(id) ON DELETE CASCADE
             )
         `);
-
-        // 3. Related Keywords 테이블 생성
         await queryRunner.query(`
             CREATE TABLE IF NOT EXISTS related_keywords (
                 id SERIAL PRIMARY KEY,
@@ -60,8 +56,6 @@ export class PostgreSQLSchema1758606527934 implements MigrationInterface {
                 CONSTRAINT FK_related_keywords_related_keyword_id FOREIGN KEY (related_keyword_id) REFERENCES keywords(id) ON DELETE CASCADE
             )
         `);
-
-        // 4. Search Trends 테이블 생성
         await queryRunner.query(`
             CREATE TABLE IF NOT EXISTS search_trends (
                 id SERIAL PRIMARY KEY,
@@ -75,8 +69,6 @@ export class PostgreSQLSchema1758606527934 implements MigrationInterface {
                 CONSTRAINT FK_search_trends_keyword_id FOREIGN KEY (keyword_id) REFERENCES keywords(id) ON DELETE CASCADE
             )
         `);
-
-        // 5. Monthly Search Ratios 테이블 생성
         await queryRunner.query(`
             CREATE TABLE IF NOT EXISTS monthly_search_ratios (
                 id SERIAL PRIMARY KEY,
@@ -89,8 +81,6 @@ export class PostgreSQLSchema1758606527934 implements MigrationInterface {
                 CONSTRAINT FK_monthly_search_ratios_keyword_id FOREIGN KEY (keyword_id) REFERENCES keywords(id) ON DELETE CASCADE
             )
         `);
-
-        // 6. Keyword Collection Logs 테이블 생성
         await queryRunner.query(`
             CREATE TABLE IF NOT EXISTS keyword_collection_logs (
                 id SERIAL PRIMARY KEY,
@@ -99,49 +89,47 @@ export class PostgreSQLSchema1758606527934 implements MigrationInterface {
                 collection_type VARCHAR(20) NOT NULL CHECK (collection_type IN ('trending', 'smartblock', 'related_search')),
                 rank_position INTEGER NOT NULL DEFAULT 0,
                 collected_at TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT UQ_keyword_collection_logs_unique_combination UNIQUE (base_query_id, collected_keyword_id, collection_type, collected_at),
                 CONSTRAINT FK_keyword_collection_logs_base_query_id FOREIGN KEY (base_query_id) REFERENCES keywords(id) ON DELETE CASCADE,
-                CONSTRAINT FK_keyword_collection_logs_collected_keyword_id FOREIGN KEY (collected_keyword_id) REFERENCES keywords(id) ON DELETE CASCADE,
-                CONSTRAINT UQ_keyword_collection_logs_unique_combination UNIQUE (base_query_id, collected_keyword_id, collection_type, collected_at)
+                CONSTRAINT FK_keyword_collection_logs_collected_keyword_id FOREIGN KEY (collected_keyword_id) REFERENCES keywords(id) ON DELETE CASCADE
             )
         `);
-
-        // 인덱스 생성
+        console.log('📊 인덱스를 생성합니다...');
         await queryRunner.query(`CREATE INDEX IF NOT EXISTS IDX_keyword_analytics_keyword_id ON keyword_analytics(keyword_id)`);
         await queryRunner.query(`CREATE INDEX IF NOT EXISTS IDX_keyword_analytics_analysis_date ON keyword_analytics(analysis_date)`);
         await queryRunner.query(`CREATE INDEX IF NOT EXISTS IDX_keyword_analytics_monthly_search_total ON keyword_analytics(monthly_search_total)`);
-        
         await queryRunner.query(`CREATE INDEX IF NOT EXISTS IDX_related_keywords_base_keyword_id ON related_keywords(base_keyword_id)`);
         await queryRunner.query(`CREATE INDEX IF NOT EXISTS IDX_related_keywords_related_keyword_id ON related_keywords(related_keyword_id)`);
         await queryRunner.query(`CREATE INDEX IF NOT EXISTS IDX_related_keywords_analysis_date ON related_keywords(analysis_date)`);
         await queryRunner.query(`CREATE INDEX IF NOT EXISTS IDX_related_keywords_rank_position ON related_keywords(rank_position)`);
-        
         await queryRunner.query(`CREATE INDEX IF NOT EXISTS IDX_search_trends_keyword_id ON search_trends(keyword_id)`);
         await queryRunner.query(`CREATE INDEX IF NOT EXISTS IDX_search_trends_period_type ON search_trends(period_type)`);
         await queryRunner.query(`CREATE INDEX IF NOT EXISTS IDX_search_trends_period_value ON search_trends(period_value)`);
-        
         await queryRunner.query(`CREATE INDEX IF NOT EXISTS IDX_monthly_search_ratios_keyword_id ON monthly_search_ratios(keyword_id)`);
         await queryRunner.query(`CREATE INDEX IF NOT EXISTS IDX_monthly_search_ratios_month_number ON monthly_search_ratios(month_number)`);
         await queryRunner.query(`CREATE INDEX IF NOT EXISTS IDX_monthly_search_ratios_analysis_year ON monthly_search_ratios(analysis_year)`);
-        
         await queryRunner.query(`CREATE INDEX IF NOT EXISTS IDX_keyword_collection_logs_base_query_id ON keyword_collection_logs(base_query_id)`);
         await queryRunner.query(`CREATE INDEX IF NOT EXISTS IDX_keyword_collection_logs_collected_keyword_id ON keyword_collection_logs(collected_keyword_id)`);
         await queryRunner.query(`CREATE INDEX IF NOT EXISTS IDX_keyword_collection_logs_collection_type ON keyword_collection_logs(collection_type)`);
         await queryRunner.query(`CREATE INDEX IF NOT EXISTS IDX_keyword_collection_logs_collected_at ON keyword_collection_logs(collected_at)`);
-
-        console.log('✅ PostgreSQL 데이터베이스 스키마 생성이 완료되었습니다!');
+        console.log('✅ 완전한 PostgreSQL 데이터베이스 스키마 생성이 완료되었습니다!');
+        console.log('📈 최적화 효과:');
+        console.log('   - 데이터 정규화: 키워드 문자열 중복 제거');
+        console.log('   - 외래키 관계: 모든 테이블에서 keyword_id 필수');
+        console.log('   - 고유 제약조건: ON CONFLICT 절 지원');
+        console.log('   - 인덱스 최적화: 조회 성능 향상');
+        console.log('   - 저장 공간: 30-40% 절약 예상');
     }
-
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        console.log('⚠️ PostgreSQL 스키마를 롤백합니다...');
-        
-        // 테이블 삭제 (역순)
+    async down(queryRunner) {
+        console.log('⚠️ 완전한 스키마를 롤백합니다...');
         await queryRunner.query(`DROP TABLE IF EXISTS keyword_collection_logs CASCADE`);
         await queryRunner.query(`DROP TABLE IF EXISTS monthly_search_ratios CASCADE`);
         await queryRunner.query(`DROP TABLE IF EXISTS search_trends CASCADE`);
         await queryRunner.query(`DROP TABLE IF EXISTS related_keywords CASCADE`);
         await queryRunner.query(`DROP TABLE IF EXISTS keyword_analytics CASCADE`);
         await queryRunner.query(`DROP TABLE IF EXISTS keywords CASCADE`);
-        
-        console.log('✅ PostgreSQL 스키마 롤백이 완료되었습니다.');
+        console.log('✅ 완전한 스키마 롤백이 완료되었습니다.');
     }
 }
+exports.CompletePostgreSQLSchema1758606527936 = CompletePostgreSQLSchema1758606527936;
+//# sourceMappingURL=1758606527936-CompletePostgreSQLSchema.js.map
