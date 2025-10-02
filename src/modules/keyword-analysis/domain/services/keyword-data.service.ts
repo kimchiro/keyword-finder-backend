@@ -348,13 +348,13 @@ export class KeywordDataService {
       }
 
       if (collectionLogs.length > 0) {
-        await this.transactionService.batchUpsert(
-          queryRunner,
-          KeywordCollectionLogs,
-          collectionLogs,
-          ['base_query_id', 'collected_keyword_id', 'collection_type', 'collected_at'],
-          ['rank_position'], // 업데이트할 컬럼
-        );
+        // 기존 데이터 삭제 후 새로 삽입 (ON CONFLICT 대신)
+        await queryRunner.manager.delete(KeywordCollectionLogs, {
+          baseQueryId: baseKeywordEntity.id,
+          collectedAt: analysisDate.value,
+        });
+        
+        await queryRunner.manager.save(KeywordCollectionLogs, collectionLogs);
       }
 
       console.log(`✅ 스크래핑 키워드 저장 완료: ${collectionLogs.length}개`);

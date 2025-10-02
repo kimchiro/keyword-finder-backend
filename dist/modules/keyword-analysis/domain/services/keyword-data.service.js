@@ -245,7 +245,11 @@ let KeywordDataService = class KeywordDataService {
                 });
             }
             if (collectionLogs.length > 0) {
-                await this.transactionService.batchUpsert(queryRunner, keyword_collection_logs_entity_1.KeywordCollectionLogs, collectionLogs, ['base_query_id', 'collected_keyword_id', 'collection_type', 'collected_at'], ['rank_position']);
+                await queryRunner.manager.delete(keyword_collection_logs_entity_1.KeywordCollectionLogs, {
+                    baseQueryId: baseKeywordEntity.id,
+                    collectedAt: analysisDate.value,
+                });
+                await queryRunner.manager.save(keyword_collection_logs_entity_1.KeywordCollectionLogs, collectionLogs);
             }
             console.log(`✅ 스크래핑 키워드 저장 완료: ${collectionLogs.length}개`);
         });
