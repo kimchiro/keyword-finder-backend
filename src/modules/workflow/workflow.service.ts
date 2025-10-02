@@ -111,12 +111,12 @@ export class WorkflowService {
 
       // Step 6: 완전한 통합 결과 반환
       console.log(`🔍 analysisData 상태:`, analysisData ? '존재' : 'null');
-      console.log(`🔍 analysisData.data:`, analysisData?.data);
-      console.log(`🔍 analysisData.data.chartData:`, analysisData?.data?.chartData);
+      console.log(`🔍 analysisData 구조:`, analysisData);
+      console.log(`🔍 analysisData.chartData:`, analysisData?.chartData);
       
       const chartData = {
-        searchTrends: analysisData?.data?.chartData?.searchTrends || [],
-        monthlyRatios: analysisData?.data?.chartData?.monthlyRatios || [],
+        searchTrends: analysisData?.chartData?.searchTrends || [],
+        monthlyRatios: analysisData?.chartData?.monthlyRatios || [],
       };
       
       console.log(`🔍 최종 chartData:`, chartData);

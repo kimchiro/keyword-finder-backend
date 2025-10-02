@@ -24,7 +24,8 @@ async function bootstrap() {
         origin: [
             'http://localhost:3000',
             'http://localhost:3002',
-            'https://keyword-finder-frontend-pc1mbsd60-kimchiros-projects.vercel.app',
+            'https://keyword-finder-frontend-lywpx896a-kimchiros-projects.vercel.app',
+            'https://keyword-finder-frontend-7rij2647y-kimchiros-projects.vercel.app',
             process.env.FRONTEND_URL || 'http://localhost:3000'
         ],
         credentials: true,

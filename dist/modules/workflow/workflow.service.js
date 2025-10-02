@@ -68,11 +68,11 @@ let WorkflowService = class WorkflowService {
             console.log(`🎉 워크플로우 완료: ${query} (${executionTime}초)`);
             console.log(`🔍 최종 contentCountsData:`, contentCountsData);
             console.log(`🔍 analysisData 상태:`, analysisData ? '존재' : 'null');
-            console.log(`🔍 analysisData.data:`, analysisData?.data);
-            console.log(`🔍 analysisData.data.chartData:`, analysisData?.data?.chartData);
+            console.log(`🔍 analysisData 구조:`, analysisData);
+            console.log(`🔍 analysisData.chartData:`, analysisData?.chartData);
             const chartData = {
-                searchTrends: analysisData?.data?.chartData?.searchTrends || [],
-                monthlyRatios: analysisData?.data?.chartData?.monthlyRatios || [],
+                searchTrends: analysisData?.chartData?.searchTrends || [],
+                monthlyRatios: analysisData?.chartData?.monthlyRatios || [],
             };
             console.log(`🔍 최종 chartData:`, chartData);
             const result = {
