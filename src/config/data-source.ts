@@ -10,12 +10,12 @@ import { KeywordCollectionLogs } from '../database/entities/keyword-collection-l
 dotenv.config();
 
 export const AppDataSource = new DataSource({
-  type: 'mysql',
-  host: process.env.MYSQL_HOST || 'localhost',
-  port: parseInt(process.env.MYSQL_PORT || '3306'),
-  username: process.env.MYSQL_USER || 'root',
-  password: process.env.MYSQL_PASSWORD || '',
-  database: process.env.MYSQL_DATABASE || 'keyword_finder',
+  type: 'postgres',
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '5432'),
+  username: process.env.DB_USERNAME || 'postgres',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_DATABASE || 'keyword_finder',
   entities: [
     Keyword,
     KeywordAnalytics,
