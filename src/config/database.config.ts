@@ -14,13 +14,12 @@ export class DatabaseConfig implements TypeOrmOptionsFactory {
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
     return {
-      type: 'mysql',
-      host: this.configService.get('MYSQL_HOST', 'localhost'),
-      port: this.configService.get('MYSQL_PORT', 3306),
-      username: this.configService.get('MYSQL_USER', 'root'),
-      password: this.configService.get('MYSQL_PASSWORD'),
-      database: this.configService.get('MYSQL_DATABASE', 'keyword_finder'),
-      charset: 'utf8mb4',
+      type: 'postgres',
+      host: this.configService.get('DB_HOST', 'localhost'),
+      port: this.configService.get('DB_PORT', 5432),
+      username: this.configService.get('DB_USERNAME', 'postgres'),
+      password: this.configService.get('DB_PASSWORD'),
+      database: this.configService.get('DB_DATABASE', 'keyword_finder'),
       entities: [
         Keyword,
         KeywordAnalytics,
