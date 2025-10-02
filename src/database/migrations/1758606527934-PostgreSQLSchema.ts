@@ -100,7 +100,8 @@ export class PostgreSQLSchema1758606527934 implements MigrationInterface {
                 rank_position INTEGER NOT NULL DEFAULT 0,
                 collected_at TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 CONSTRAINT FK_keyword_collection_logs_base_query_id FOREIGN KEY (base_query_id) REFERENCES keywords(id) ON DELETE CASCADE,
-                CONSTRAINT FK_keyword_collection_logs_collected_keyword_id FOREIGN KEY (collected_keyword_id) REFERENCES keywords(id) ON DELETE CASCADE
+                CONSTRAINT FK_keyword_collection_logs_collected_keyword_id FOREIGN KEY (collected_keyword_id) REFERENCES keywords(id) ON DELETE CASCADE,
+                CONSTRAINT UQ_keyword_collection_logs_unique_combination UNIQUE (base_query_id, collected_keyword_id, collection_type, collected_at)
             )
         `);
 
