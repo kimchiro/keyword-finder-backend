@@ -1,0 +1,25 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+네이버 API 호출에서 일시적 오류나 네트워크 문제로 인한 실패가 발생할 때 적절한 처리가 되지 않고 있습니다.
+
+다음 기능을 가진 API 재시도 시스템을 구현해주세요:
+
+**기능 요구사항:**
+- 지수 백오프 알고리즘 적용 (1초, 2초, 4초 간격)
+- 최대 3회 재시도
+- HTTP 상태 코드별 재시도 전략 (5xx는 재시도, 4xx는 즉시 실패)
+- API 호출 제한 관리 (Rate Limiting)
+- 서킷 브레이커 패턴 적용
+
+**구현 파일:**
+- `src/common/services/api-retry.service.ts`
+- `src/common/interceptors/retry.interceptor.ts`
+- `src/common/guards/rate-limit.guard.ts`
+
+**적용 대상:**
+- `src/modules/naver-api/naver-api.service.ts` (20-53줄, 55-87줄)
+
+**목표:** API 호출 성공률 95% → 99.5% 향상

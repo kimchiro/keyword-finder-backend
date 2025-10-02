@@ -1,0 +1,35 @@
+import { ConfigService } from '@nestjs/config';
+export declare class AppConfigService {
+    private readonly configService;
+    constructor(configService: ConfigService);
+    get port(): number;
+    get nodeEnv(): string;
+    get isDevelopment(): boolean;
+    get isProduction(): boolean;
+    get dbHost(): string;
+    get dbPort(): number;
+    get dbUsername(): string;
+    get dbPassword(): string;
+    get dbDatabase(): string;
+    get naverClientId(): string;
+    get naverClientSecret(): string;
+    get naverApiBaseUrl(): string;
+    get apiTimeoutMs(): number;
+    get apiExtendedTimeoutMs(): number;
+    get apiRetryCount(): number;
+    get apiRetryDelayMs(): number;
+    get scrapingMaxResults(): number;
+    get scrapingMaxKeywordsPerType(): number;
+    get scrapingPageTimeoutMs(): number;
+    get scrapingDelayMs(): number;
+    get defaultStartDate(): string;
+    get defaultEndDate(): string;
+    get browserPoolSize(): number;
+    get browserIdleTimeoutMs(): number;
+    get rateLimitTtl(): number;
+    get rateLimitMax(): number;
+    validateNaverApiKeys(): boolean;
+    validateDatabaseConfig(): boolean;
+    validateAllConfigs(): void;
+    getConfigSummary(): Record<string, any>;
+}

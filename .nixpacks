@@ -1,0 +1,2 @@
+# 이 파일은 Nixpacks가 Node.js 프로젝트를 감지하도록 도와줍니다
+# Railway 배포시 app/backend 디렉토리를 Node.js 애플리케이션으로 인식

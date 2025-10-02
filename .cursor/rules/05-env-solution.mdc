@@ -1,0 +1,30 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+현재 환경변수 검증이 런타임에서만 이루어지고, 하드코딩된 값들이 많아 유지보수성이 떨어집니다.
+
+다음 설정 관리 시스템을 구현해주세요:
+
+**문제점:**
+- 네이버 API 키 검증이 호출 시점에만 실행
+- 날짜 범위, 제한값 등이 하드코딩됨
+- 환경별 설정 분리 부족
+
+**해결 방안:**
+- class-validator를 사용한 환경변수 검증 클래스
+- 애플리케이션 시작 시 필수 환경변수 검증
+- 설정값 상수 관리 시스템
+- 환경별 설정 파일 분리
+
+**구현 파일:**
+- `src/config/app.config.ts`
+- `src/config/validation.schema.ts`
+- `src/constants/scraping.constants.ts`
+- `src/constants/api.constants.ts`
+
+**하드코딩 제거 대상:**
+- 날짜 범위: '2024-01-01', '2024-12-31'
+- 제한값: .slice(0, 10), maxResults = 50
+- 타임아웃: 10000, 15000

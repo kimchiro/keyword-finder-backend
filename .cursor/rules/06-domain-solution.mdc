@@ -1,0 +1,66 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+현재 서비스 클래스들이 너무 많은 책임을 가지고 있어 단일 책임 원칙을 위반하고 있습니다.
+
+KeywordAnalysisService를 도메인 주도 설계 원칙에 따라 리팩토링해주세요:
+
+**현재 문제:**
+- KeywordAnalysisService가 8개의 Repository를 의존
+- 비즈니스 로직과 데이터 접근 로직이 혼재
+- 337줄의 거대한 서비스 클래스
+
+**리팩토링 방향:**
+1. **도메인 서비스 분리:**
+   - `KeywordAnalysisDomainService` (순수 비즈니스 로직)
+   - `KeywordDataService` (데이터 접근 로직)
+   - `ChartDataService` (차트 데이터 전용)
+
+2. **Value Object 도입:**
+   - `Keyword` (키워드 값 객체)
+   - `AnalysisDate` (분석 날짜 값 객체)
+   - `SearchVolume` (검색량 값 객체)
+
+3. **Aggregate 패턴:**
+   - `KeywordAnalysisAggregate` (키워드 분석 집합체)
+
+**파일 구조:**
+```
+src/modules/keyword-analysis/
+├── domain/                           # 도메인 레이어
+│   ├── value-objects/               # 값 객체
+│   │   ├── keyword.vo.ts           # 키워드 값 객체
+│   │   ├── analysis-date.vo.ts     # 분석 날짜 값 객체
+│   │   ├── search-volume.vo.ts     # 검색량 값 객체
+│   │   └── index.ts
+│   ├── services/                   # 도메인 서비스
+│   │   ├── keyword-analysis-domain.service.ts  # 도메인 비즈니스 로직
+│   │   ├── keyword-data.service.ts             # 데이터 접근 서비스
+│   │   ├── chart-data.service.ts               # 차트 데이터 서비스
+│   │   └── index.ts
+│   ├── aggregates/                 # 집합체
+│   │   ├── keyword-analysis.aggregate.ts       # 키워드 분석 집합체
+│   │   └── index.ts
+│   └── index.ts
+├── dto/                            # DTO
+├── keyword-analysis.controller.ts   # 컨트롤러 (Application Layer)
+├── keyword-analysis.service.ts      # 애플리케이션 서비스 (리팩토링됨)
+├── keyword-analysis.module.ts       # 모듈
+└── keyword-analysis.service.spec.ts # 테스트
+```
+
+**구현 완료:**
+✅ Value Object 패턴으로 도메인 개념 캡슐화
+✅ 도메인 서비스 분리로 단일 책임 원칙 준수
+✅ Aggregate 패턴으로 도메인 객체 일관성 보장
+✅ 기존 400줄 서비스를 60줄로 축소
+✅ 8개 Repository 의존성을 도메인 서비스로 위임
+
+**주요 개선사항:**
+- 키워드 분석 로직이 도메인 레이어로 이동
+- 데이터 접근과 비즈니스 로직 완전 분리
+- 값 객체를 통한 유효성 검증 강화
+- 집합체를 통한 도메인 무결성 보장
+- 테스트 가능한 구조로 개선
