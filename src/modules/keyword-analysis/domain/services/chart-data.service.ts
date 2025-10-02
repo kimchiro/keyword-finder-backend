@@ -104,7 +104,7 @@ export class ChartDataService {
       this.dataSource
         .getRepository(SearchTrends)
         .createQueryBuilder('st')
-        .leftJoinAndSelect('st.keyword', 'k')
+        .leftJoinAndSelect('st.keywordEntity', 'k')
         .select(['st.id', 'st.keywordId', 'st.periodType', 'st.periodValue', 'st.searchVolume', 'st.searchRatio', 'st.createdAt', 'k.keyword'])
         .where('k.keyword = :keyword AND st.periodType = :periodType', { 
           keyword: keyword.value, 
@@ -117,7 +117,7 @@ export class ChartDataService {
       this.dataSource
         .getRepository(MonthlySearchRatios)
         .createQueryBuilder('msr')
-        .leftJoinAndSelect('msr.keyword', 'k')
+        .leftJoinAndSelect('msr.keywordEntity', 'k')
         .select(['msr.id', 'msr.keywordId', 'msr.monthNumber', 'msr.searchRatio', 'msr.analysisYear', 'msr.createdAt', 'k.keyword'])
         .where('k.keyword = :keyword AND msr.analysisYear = :analysisYear', { 
           keyword: keyword.value, 

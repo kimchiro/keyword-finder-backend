@@ -114,7 +114,7 @@ let KeywordDataService = class KeywordDataService {
     async findKeywordAnalytics(keyword) {
         const result = await this.keywordAnalyticsRepository
             .createQueryBuilder('ka')
-            .leftJoinAndSelect('ka.keyword', 'k')
+            .leftJoinAndSelect('ka.keywordEntity', 'k')
             .where('k.keyword = :keyword', { keyword: keyword.value })
             .orderBy('ka.analysisDate', 'DESC')
             .getOne();
@@ -123,7 +123,7 @@ let KeywordDataService = class KeywordDataService {
     async findKeywordAnalyticsByDate(keyword, analysisDate) {
         const result = await this.keywordAnalyticsRepository
             .createQueryBuilder('ka')
-            .leftJoinAndSelect('ka.keyword', 'k')
+            .leftJoinAndSelect('ka.keywordEntity', 'k')
             .where('k.keyword = :keyword AND ka.analysisDate = :analysisDate', {
             keyword: keyword.value,
             analysisDate: analysisDate.value
@@ -134,8 +134,8 @@ let KeywordDataService = class KeywordDataService {
     async findRelatedKeywords(keyword, analysisDate) {
         const result = await this.relatedKeywordsRepository
             .createQueryBuilder('rk')
-            .leftJoinAndSelect('rk.baseKeyword', 'k1')
-            .leftJoinAndSelect('rk.relatedKeyword', 'k2')
+            .leftJoinAndSelect('rk.baseKeywordEntity', 'k1')
+            .leftJoinAndSelect('rk.relatedKeywordEntity', 'k2')
             .where('k1.keyword = :keyword AND rk.analysisDate = :analysisDate', {
             keyword: keyword.value,
             analysisDate: analysisDate.value
