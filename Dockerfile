@@ -28,11 +28,11 @@ COPY package*.json ./
 # 프로덕션 의존성 설치
 RUN npm ci --omit=dev && npm cache clean --force
 
-# 빌드된 파일 복사
-COPY --from=builder /app/dist ./dist
-
 # Playwright 브라우저 설치 (필수)
 RUN npx playwright install chromium --with-deps
+
+# 빌드된 파일 복사
+COPY --from=builder /app/dist ./dist
 
 # 포트 노출
 EXPOSE 3001
