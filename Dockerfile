@@ -28,7 +28,8 @@ COPY package*.json ./
 # 프로덕션 의존성 설치
 RUN npm ci --omit=dev && npm cache clean --force
 
-# Playwright 브라우저 설치 (필수)
+# Playwright 명시적 설치 및 브라우저 설치
+RUN npm install playwright@^1.55.0
 RUN npx playwright install chromium --with-deps
 
 # 빌드된 파일 복사
