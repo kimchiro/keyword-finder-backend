@@ -155,60 +155,52 @@ export class KeywordDataService {
     });
   }
 
-  // 키워드 분석 데이터 조회
-  async findKeywordAnalytics(keyword: Keyword): Promise<KeywordAnalytics | null> {
-    // 먼저 Keyword 엔티티를 조회
-    const keywordEntity = await this.keywordRepository.findOne({
-      where: { keyword: keyword.value }
-    });
+  // 키워드 분석 데이터 조회 (keyword 문자열 포함)
+  async findKeywordAnalytics(keyword: Keyword): Promise<any | null> {
+    const result = await this.keywordAnalyticsRepository
+      .createQueryBuilder('ka')
+      .leftJoinAndSelect('ka.keyword', 'k')
+      .where('k.keyword = :keyword', { keyword: keyword.value })
+      .orderBy('ka.analysisDate', 'DESC')
+      .getOne();
 
-    if (!keywordEntity) {
-      return null;
-    }
-
-    return await this.keywordAnalyticsRepository.findOne({
-      where: { keywordId: keywordEntity.id },
-      order: { analysisDate: 'DESC' },
-    });
+    return result;
   }
 
-  // 특정 날짜의 키워드 분석 데이터 조회
+  // 특정 날짜의 키워드 분석 데이터 조회 (keyword 문자열 포함)
   async findKeywordAnalyticsByDate(
     keyword: Keyword,
     analysisDate: AnalysisDate,
-  ): Promise<KeywordAnalytics | null> {
-    // 먼저 Keyword 엔티티를 조회
-    const keywordEntity = await this.keywordRepository.findOne({
-      where: { keyword: keyword.value }
-    });
+  ): Promise<any | null> {
+    const result = await this.keywordAnalyticsRepository
+      .createQueryBuilder('ka')
+      .leftJoinAndSelect('ka.keyword', 'k')
+      .where('k.keyword = :keyword AND ka.analysisDate = :analysisDate', { 
+        keyword: keyword.value,
+        analysisDate: analysisDate.value
+      })
+      .getOne();
 
-    if (!keywordEntity) {
-      return null;
-    }
-
-    return await this.keywordAnalyticsRepository.findOne({
-      where: { keywordId: keywordEntity.id, analysisDate: analysisDate.value },
-    });
+    return result;
   }
 
-  // 연관 키워드 데이터 조회
+  // 연관 키워드 데이터 조회 (keyword 문자열 포함)
   async findRelatedKeywords(
     keyword: Keyword,
     analysisDate: AnalysisDate,
-  ): Promise<RelatedKeywords[]> {
-    // 먼저 Keyword 엔티티를 조회
-    const keywordEntity = await this.keywordRepository.findOne({
-      where: { keyword: keyword.value }
-    });
+  ): Promise<any[]> {
+    const result = await this.relatedKeywordsRepository
+      .createQueryBuilder('rk')
+      .leftJoinAndSelect('rk.baseKeyword', 'k1')
+      .leftJoinAndSelect('rk.relatedKeyword', 'k2')
+      .where('k1.keyword = :keyword AND rk.analysisDate = :analysisDate', { 
+        keyword: keyword.value,
+        analysisDate: analysisDate.value
+      })
+      .orderBy('rk.rankPosition', 'ASC')
+      .getMany();
 
-    if (!keywordEntity) {
-      return [];
-    }
-
-    return await this.relatedKeywordsRepository.find({
-      where: { baseKeywordId: keywordEntity.id, analysisDate: analysisDate.value },
-      order: { rankPosition: 'ASC' },
-    });
+    return result;
   }
 
   // 분석된 키워드 목록 조회

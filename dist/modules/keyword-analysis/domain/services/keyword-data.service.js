@@ -112,39 +112,37 @@ let KeywordDataService = class KeywordDataService {
         });
     }
     async findKeywordAnalytics(keyword) {
-        const keywordEntity = await this.keywordRepository.findOne({
-            where: { keyword: keyword.value }
-        });
-        if (!keywordEntity) {
-            return null;
-        }
-        return await this.keywordAnalyticsRepository.findOne({
-            where: { keywordId: keywordEntity.id },
-            order: { analysisDate: 'DESC' },
-        });
+        const result = await this.keywordAnalyticsRepository
+            .createQueryBuilder('ka')
+            .leftJoinAndSelect('ka.keyword', 'k')
+            .where('k.keyword = :keyword', { keyword: keyword.value })
+            .orderBy('ka.analysisDate', 'DESC')
+            .getOne();
+        return result;
     }
     async findKeywordAnalyticsByDate(keyword, analysisDate) {
-        const keywordEntity = await this.keywordRepository.findOne({
-            where: { keyword: keyword.value }
-        });
-        if (!keywordEntity) {
-            return null;
-        }
-        return await this.keywordAnalyticsRepository.findOne({
-            where: { keywordId: keywordEntity.id, analysisDate: analysisDate.value },
-        });
+        const result = await this.keywordAnalyticsRepository
+            .createQueryBuilder('ka')
+            .leftJoinAndSelect('ka.keyword', 'k')
+            .where('k.keyword = :keyword AND ka.analysisDate = :analysisDate', {
+            keyword: keyword.value,
+            analysisDate: analysisDate.value
+        })
+            .getOne();
+        return result;
     }
     async findRelatedKeywords(keyword, analysisDate) {
-        const keywordEntity = await this.keywordRepository.findOne({
-            where: { keyword: keyword.value }
-        });
-        if (!keywordEntity) {
-            return [];
-        }
-        return await this.relatedKeywordsRepository.find({
-            where: { baseKeywordId: keywordEntity.id, analysisDate: analysisDate.value },
-            order: { rankPosition: 'ASC' },
-        });
+        const result = await this.relatedKeywordsRepository
+            .createQueryBuilder('rk')
+            .leftJoinAndSelect('rk.baseKeyword', 'k1')
+            .leftJoinAndSelect('rk.relatedKeyword', 'k2')
+            .where('k1.keyword = :keyword AND rk.analysisDate = :analysisDate', {
+            keyword: keyword.value,
+            analysisDate: analysisDate.value
+        })
+            .orderBy('rk.rankPosition', 'ASC')
+            .getMany();
+        return result;
     }
     async findAnalyzedKeywords() {
         return await this.keywordAnalyticsRepository

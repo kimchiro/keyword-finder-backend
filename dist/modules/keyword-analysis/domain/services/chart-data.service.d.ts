@@ -14,8 +14,8 @@ export declare class ChartDataService {
         monthlyRatios: MonthlySearchRatios[];
     }>;
     getChartData(keyword: Keyword, analysisDate: AnalysisDate): Promise<{
-        searchTrends: SearchTrends[];
-        monthlyRatios: MonthlySearchRatios[];
+        searchTrends: any[];
+        monthlyRatios: any[];
     }>;
     private clearExistingChartData;
     private extractChartDataFromNaverApi;

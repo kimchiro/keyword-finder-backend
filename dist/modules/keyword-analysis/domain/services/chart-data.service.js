@@ -63,33 +63,29 @@ let ChartDataService = class ChartDataService {
         });
     }
     async getChartData(keyword, analysisDate) {
-        const KeywordEntity = await Promise.resolve().then(() => require('../../../../database/entities/keyword.entity')).then(m => m.Keyword);
-        const keywordEntity = await this.dataSource.getRepository(KeywordEntity).findOne({
-            where: { keyword: keyword.value }
-        });
-        if (!keywordEntity) {
-            return {
-                searchTrends: [],
-                monthlyRatios: [],
-            };
-        }
         const analysisDateStr = analysisDate.dateString;
         const [searchTrends, monthlyRatios,] = await Promise.all([
             this.dataSource
                 .getRepository(search_trends_entity_1.SearchTrends)
                 .createQueryBuilder('st')
-                .select(['st.id', 'st.keywordId', 'st.periodType', 'st.periodValue', 'st.searchVolume', 'st.searchRatio', 'st.createdAt'])
-                .where('st.keywordId = :keywordId AND st.periodType = :periodType')
-                .setParameters({ keywordId: keywordEntity.id, periodType: search_trends_entity_1.PeriodType.MONTHLY })
+                .leftJoinAndSelect('st.keyword', 'k')
+                .select(['st.id', 'st.keywordId', 'st.periodType', 'st.periodValue', 'st.searchVolume', 'st.searchRatio', 'st.createdAt', 'k.keyword'])
+                .where('k.keyword = :keyword AND st.periodType = :periodType', {
+                keyword: keyword.value,
+                periodType: search_trends_entity_1.PeriodType.MONTHLY
+            })
                 .orderBy('st.periodValue', 'ASC')
                 .limit(12)
                 .getMany(),
             this.dataSource
                 .getRepository(monthly_search_ratios_entity_1.MonthlySearchRatios)
                 .createQueryBuilder('msr')
-                .select(['msr.id', 'msr.keywordId', 'msr.monthNumber', 'msr.searchRatio', 'msr.analysisYear', 'msr.createdAt'])
-                .where('msr.keywordId = :keywordId AND msr.analysisYear = :analysisYear')
-                .setParameters({ keywordId: keywordEntity.id, analysisYear: analysisDate.year })
+                .leftJoinAndSelect('msr.keyword', 'k')
+                .select(['msr.id', 'msr.keywordId', 'msr.monthNumber', 'msr.searchRatio', 'msr.analysisYear', 'msr.createdAt', 'k.keyword'])
+                .where('k.keyword = :keyword AND msr.analysisYear = :analysisYear', {
+                keyword: keyword.value,
+                analysisYear: analysisDate.year
+            })
                 .orderBy('msr.monthNumber', 'ASC')
                 .getMany(),
         ]);

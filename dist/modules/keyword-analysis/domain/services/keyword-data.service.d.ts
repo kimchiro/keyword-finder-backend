@@ -14,9 +14,9 @@ export declare class KeywordDataService {
     constructor(keywordAnalyticsRepository: Repository<KeywordAnalytics>, relatedKeywordsRepository: Repository<RelatedKeywords>, keywordCollectionLogsRepository: Repository<KeywordCollectionLogs>, keywordRepository: Repository<KeywordEntity>, transactionService: TransactionService);
     saveKeywordAnalytics(keyword: Keyword, analysisDate: AnalysisDate, naverApiData?: any): Promise<KeywordAnalytics>;
     saveRelatedKeywords(baseKeyword: Keyword, analysisDate: AnalysisDate, relatedKeywordsData: any[]): Promise<RelatedKeywords[]>;
-    findKeywordAnalytics(keyword: Keyword): Promise<KeywordAnalytics | null>;
-    findKeywordAnalyticsByDate(keyword: Keyword, analysisDate: AnalysisDate): Promise<KeywordAnalytics | null>;
-    findRelatedKeywords(keyword: Keyword, analysisDate: AnalysisDate): Promise<RelatedKeywords[]>;
+    findKeywordAnalytics(keyword: Keyword): Promise<any | null>;
+    findKeywordAnalyticsByDate(keyword: Keyword, analysisDate: AnalysisDate): Promise<any | null>;
+    findRelatedKeywords(keyword: Keyword, analysisDate: AnalysisDate): Promise<any[]>;
     findAnalyzedKeywords(): Promise<any[]>;
     private extractNaverApiData;
     saveScrapedKeywords(keyword: Keyword, analysisDate: AnalysisDate, scrapingData: any): Promise<void>;

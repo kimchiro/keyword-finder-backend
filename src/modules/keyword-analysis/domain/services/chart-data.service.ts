@@ -90,25 +90,11 @@ export class ChartDataService {
     });
   }
 
-  // 차트 데이터 조회
+  // 차트 데이터 조회 (keyword 문자열 포함)
   async getChartData(keyword: Keyword, analysisDate: AnalysisDate): Promise<{
-    searchTrends: SearchTrends[];
-    monthlyRatios: MonthlySearchRatios[];
+    searchTrends: any[];
+    monthlyRatios: any[];
   }> {
-    // 키워드 엔티티 조회
-    const KeywordEntity = await import('../../../../database/entities/keyword.entity').then(m => m.Keyword);
-    const keywordEntity = await this.dataSource.getRepository(KeywordEntity).findOne({
-      where: { keyword: keyword.value }
-    });
-
-    if (!keywordEntity) {
-      // 키워드가 없으면 빈 데이터 반환
-      return {
-        searchTrends: [],
-        monthlyRatios: [],
-      };
-    }
-
     const analysisDateStr = analysisDate.dateString;
     
     const [
@@ -118,9 +104,12 @@ export class ChartDataService {
       this.dataSource
         .getRepository(SearchTrends)
         .createQueryBuilder('st')
-        .select(['st.id', 'st.keywordId', 'st.periodType', 'st.periodValue', 'st.searchVolume', 'st.searchRatio', 'st.createdAt'])
-        .where('st.keywordId = :keywordId AND st.periodType = :periodType')
-        .setParameters({ keywordId: keywordEntity.id, periodType: PeriodType.MONTHLY })
+        .leftJoinAndSelect('st.keyword', 'k')
+        .select(['st.id', 'st.keywordId', 'st.periodType', 'st.periodValue', 'st.searchVolume', 'st.searchRatio', 'st.createdAt', 'k.keyword'])
+        .where('k.keyword = :keyword AND st.periodType = :periodType', { 
+          keyword: keyword.value, 
+          periodType: PeriodType.MONTHLY 
+        })
         .orderBy('st.periodValue', 'ASC')
         .limit(12)
         .getMany(),
@@ -128,9 +117,12 @@ export class ChartDataService {
       this.dataSource
         .getRepository(MonthlySearchRatios)
         .createQueryBuilder('msr')
-        .select(['msr.id', 'msr.keywordId', 'msr.monthNumber', 'msr.searchRatio', 'msr.analysisYear', 'msr.createdAt'])
-        .where('msr.keywordId = :keywordId AND msr.analysisYear = :analysisYear')
-        .setParameters({ keywordId: keywordEntity.id, analysisYear: analysisDate.year })
+        .leftJoinAndSelect('msr.keyword', 'k')
+        .select(['msr.id', 'msr.keywordId', 'msr.monthNumber', 'msr.searchRatio', 'msr.analysisYear', 'msr.createdAt', 'k.keyword'])
+        .where('k.keyword = :keyword AND msr.analysisYear = :analysisYear', { 
+          keyword: keyword.value, 
+          analysisYear: analysisDate.year 
+        })
         .orderBy('msr.monthNumber', 'ASC')
         .getMany(),
 

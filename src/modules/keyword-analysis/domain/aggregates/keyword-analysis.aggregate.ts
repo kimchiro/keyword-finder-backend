@@ -132,13 +132,13 @@ export class KeywordAnalysisAggregate {
     };
   }
 
-  // 분석 결과를 DTO 형태로 변환
+  // 분석 결과를 DTO 형태로 변환 (keyword 문자열 포함)
   toDto(): {
-    analytics: KeywordAnalytics;
-    relatedKeywords: RelatedKeywords[];
+    analytics: any;
+    relatedKeywords: any[];
     chartData: {
-      searchTrends: SearchTrends[];
-      monthlyRatios: MonthlySearchRatios[];
+      searchTrends: any[];
+      monthlyRatios: any[];
     };
   } {
     return {

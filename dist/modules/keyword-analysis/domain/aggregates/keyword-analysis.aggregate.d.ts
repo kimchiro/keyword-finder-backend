@@ -37,11 +37,11 @@ export declare class KeywordAnalysisAggregate {
         trendDirection: 'up' | 'down' | 'stable';
     };
     toDto(): {
-        analytics: KeywordAnalytics;
-        relatedKeywords: RelatedKeywords[];
+        analytics: any;
+        relatedKeywords: any[];
         chartData: {
-            searchTrends: SearchTrends[];
-            monthlyRatios: MonthlySearchRatios[];
+            searchTrends: any[];
+            monthlyRatios: any[];
         };
     };
     validate(): boolean;
