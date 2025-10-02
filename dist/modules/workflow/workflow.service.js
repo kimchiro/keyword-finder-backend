@@ -55,16 +55,26 @@ let WorkflowService = class WorkflowService {
             console.log(`📊 Step 5: 키워드 분석 데이터 저장`);
             let analysisData = null;
             try {
+                console.log(`🔍 analyzeKeyword 호출 시작: query=${query}, naverApiData=${!!naverApiResult.data}`);
                 const analysisResult = await this.keywordAnalysisService.analyzeKeyword(query, undefined, naverApiResult.data);
                 analysisData = analysisResult;
-                console.log(`✅ 키워드 분석 데이터 저장 완료`);
+                console.log(`✅ 키워드 분석 데이터 저장 완료:`, analysisResult);
             }
             catch (error) {
-                console.warn(`⚠️ 키워드 분석 데이터 저장 실패 (계속 진행): ${error.message}`);
+                console.error(`❌ 키워드 분석 데이터 저장 실패:`, error);
+                console.error(`❌ 오류 스택:`, error.stack);
             }
             const executionTime = (Date.now() - startTime) / 1000;
             console.log(`🎉 워크플로우 완료: ${query} (${executionTime}초)`);
             console.log(`🔍 최종 contentCountsData:`, contentCountsData);
+            console.log(`🔍 analysisData 상태:`, analysisData ? '존재' : 'null');
+            console.log(`🔍 analysisData.data:`, analysisData?.data);
+            console.log(`🔍 analysisData.data.chartData:`, analysisData?.data?.chartData);
+            const chartData = {
+                searchTrends: analysisData?.data?.chartData?.searchTrends || [],
+                monthlyRatios: analysisData?.data?.chartData?.monthlyRatios || [],
+            };
+            console.log(`🔍 최종 chartData:`, chartData);
             const result = {
                 success: true,
                 data: {
@@ -73,6 +83,7 @@ let WorkflowService = class WorkflowService {
                     naverApiData: naverApiResult.data,
                     contentCountsData: contentCountsData,
                     analysisData: analysisData,
+                    chartData: chartData,
                     topKeywords: savedScrapingData?.topKeywords || [],
                     keywordsWithRank: savedScrapingData?.keywordsWithRank || [],
                     executionTime,
@@ -94,6 +105,10 @@ let WorkflowService = class WorkflowService {
                     naverApiData: null,
                     contentCountsData: null,
                     analysisData: null,
+                    chartData: {
+                        searchTrends: [],
+                        monthlyRatios: [],
+                    },
                     topKeywords: [],
                     keywordsWithRank: [],
                     executionTime,

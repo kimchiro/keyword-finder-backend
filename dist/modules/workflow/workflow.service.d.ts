@@ -10,6 +10,10 @@ export interface WorkflowResult {
         naverApiData: any;
         contentCountsData: any;
         analysisData: any;
+        chartData: {
+            searchTrends: any[];
+            monthlyRatios: any[];
+        };
         topKeywords: string[];
         keywordsWithRank: Array<{
             keyword: string;

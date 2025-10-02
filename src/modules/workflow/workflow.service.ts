@@ -12,6 +12,10 @@ export interface WorkflowResult {
     naverApiData: any;      // 1개 키워드 네이버 API 결과 (블로그 + 데이터랩만)
     contentCountsData: any; // 콘텐츠 발행량 데이터 (별도 API)
     analysisData: any;      // 키워드 분석 데이터
+    chartData: {
+      searchTrends: any[];  // 차트 데이터 - 검색 트렌드
+      monthlyRatios: any[]; // 차트 데이터 - 월별 비율
+    };
     topKeywords: string[];  // 상위 키워드 목록
     keywordsWithRank: Array<{
       keyword: string;
@@ -88,15 +92,17 @@ export class WorkflowService {
       console.log(`📊 Step 5: 키워드 분석 데이터 저장`);
       let analysisData = null;
       try {
+        console.log(`🔍 analyzeKeyword 호출 시작: query=${query}, naverApiData=${!!naverApiResult.data}`);
         const analysisResult = await this.keywordAnalysisService.analyzeKeyword(
           query, 
           undefined, 
           naverApiResult.data
         );
         analysisData = analysisResult;
-        console.log(`✅ 키워드 분석 데이터 저장 완료`);
+        console.log(`✅ 키워드 분석 데이터 저장 완료:`, analysisResult);
       } catch (error) {
-        console.warn(`⚠️ 키워드 분석 데이터 저장 실패 (계속 진행): ${error.message}`);
+        console.error(`❌ 키워드 분석 데이터 저장 실패:`, error);
+        console.error(`❌ 오류 스택:`, error.stack);
       }
 
       const executionTime = (Date.now() - startTime) / 1000;
@@ -104,6 +110,17 @@ export class WorkflowService {
       console.log(`🔍 최종 contentCountsData:`, contentCountsData);
 
       // Step 6: 완전한 통합 결과 반환
+      console.log(`🔍 analysisData 상태:`, analysisData ? '존재' : 'null');
+      console.log(`🔍 analysisData.data:`, analysisData?.data);
+      console.log(`🔍 analysisData.data.chartData:`, analysisData?.data?.chartData);
+      
+      const chartData = {
+        searchTrends: analysisData?.data?.chartData?.searchTrends || [],
+        monthlyRatios: analysisData?.data?.chartData?.monthlyRatios || [],
+      };
+      
+      console.log(`🔍 최종 chartData:`, chartData);
+      
       const result = {
         success: true,
         data: {
@@ -112,6 +129,7 @@ export class WorkflowService {
           naverApiData: naverApiResult.data,   // 네이버 API 결과 (블로그 + 데이터랩)
           contentCountsData: contentCountsData, // 콘텐츠 발행량 데이터 (별도 API)
           analysisData: analysisData,          // 키워드 분석 데이터
+          chartData: chartData,                // 차트 데이터
           topKeywords: savedScrapingData?.topKeywords || [],
           keywordsWithRank: savedScrapingData?.keywordsWithRank || [],
           executionTime,
@@ -135,6 +153,10 @@ export class WorkflowService {
           naverApiData: null,
           contentCountsData: null,
           analysisData: null,
+          chartData: {
+            searchTrends: [],
+            monthlyRatios: [],
+          },
           topKeywords: [],
           keywordsWithRank: [],
           executionTime,
