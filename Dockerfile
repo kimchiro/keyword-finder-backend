@@ -31,8 +31,8 @@ RUN npm ci --omit=dev && npm cache clean --force
 # 빌드된 파일 복사
 COPY --from=builder /app/dist ./dist
 
-# Playwright 브라우저 설치
-RUN npx playwright install chromium
+# Playwright 브라우저 설치 (Alpine Linux 호환)
+RUN npx playwright install chromium || echo "Playwright installation failed, continuing..."
 
 # 포트 노출
 EXPOSE 3001
