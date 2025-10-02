@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Index,
+  Unique,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
@@ -17,6 +18,7 @@ export enum CollectionType {
 }
 
 @Entity('keyword_collection_logs')
+@Unique(['baseQueryId', 'collectedKeywordId', 'collectionType', 'collectedAt'])
 @Index(['baseQueryId'])
 @Index(['collectedKeywordId'])
 @Index(['collectionType'])

@@ -68,6 +68,7 @@ __decorate([
 ], KeywordCollectionLogs.prototype, "collectedAt", void 0);
 exports.KeywordCollectionLogs = KeywordCollectionLogs = __decorate([
     (0, typeorm_1.Entity)('keyword_collection_logs'),
+    (0, typeorm_1.Unique)(['baseQueryId', 'collectedKeywordId', 'collectionType', 'collectedAt']),
     (0, typeorm_1.Index)(['baseQueryId']),
     (0, typeorm_1.Index)(['collectedKeywordId']),
     (0, typeorm_1.Index)(['collectionType']),
