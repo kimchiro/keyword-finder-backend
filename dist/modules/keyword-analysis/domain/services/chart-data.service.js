@@ -104,14 +104,23 @@ let ChartDataService = class ChartDataService {
         const searchTrends = [];
         const monthlyRatios = [];
         try {
+            console.log(`🔍 네이버 API 데이터 구조 확인:`, {
+                hasNaverApiData: !!naverApiData,
+                hasDatalab: !!naverApiData?.datalab,
+                hasResults: !!naverApiData?.datalab?.results,
+                resultsLength: naverApiData?.datalab?.results?.length || 0,
+                hasData: !!naverApiData?.datalab?.results?.[0]?.data,
+                dataLength: naverApiData?.datalab?.results?.[0]?.data?.length || 0,
+            });
             if (naverApiData?.datalab?.results?.[0]?.data) {
                 const datalabData = naverApiData.datalab.results[0].data;
+                console.log(`📊 데이터랩 데이터 샘플:`, datalabData.slice(0, 3));
                 for (const dataPoint of datalabData) {
                     searchTrends.push({
                         keywordId,
                         periodType: search_trends_entity_1.PeriodType.MONTHLY,
                         periodValue: dataPoint.period,
-                        searchVolume: dataPoint.ratio,
+                        searchVolume: dataPoint.ratio * 1000,
                         searchRatio: dataPoint.ratio,
                     });
                     const monthMatch = dataPoint.period.match(/-(\d{2})-/);
@@ -130,6 +139,12 @@ let ChartDataService = class ChartDataService {
         catch (error) {
             console.error('❌ 네이버 API 차트 데이터 추출 오류:', error);
         }
+        console.log(`📊 추출된 차트 데이터:`, {
+            searchTrendsCount: searchTrends.length,
+            monthlyRatiosCount: monthlyRatios.length,
+            searchTrendsSample: searchTrends.slice(0, 2),
+            monthlyRatiosSample: monthlyRatios.slice(0, 2),
+        });
         return {
             searchTrends,
             monthlyRatios,
