@@ -41,7 +41,7 @@ export class MonthlySearchRatios {
   searchRatio: number;
 
   @ApiProperty({ description: '분석 연도' })
-  @Column({ name: 'analysis_year', type: 'year' })
+  @Column({ name: 'analysis_year', type: 'int' })
   analysisYear: number;
 
   @ApiProperty({ description: '생성일시' })
