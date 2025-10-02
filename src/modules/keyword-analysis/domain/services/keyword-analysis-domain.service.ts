@@ -33,7 +33,12 @@ export class KeywordAnalysisDomainService {
 
     if (existingAnalytics) {
       console.log(`⚠️ 키워드 '${keywordValue}'에 대한 분석 데이터가 이미 존재합니다. 기존 데이터를 반환합니다.`);
-      return await this.getExistingAnalysis(keyword, analysisDate);
+      try {
+        return await this.getExistingAnalysis(keyword, analysisDate);
+      } catch (error) {
+        console.warn(`⚠️ 기존 데이터 조회 실패, 새로 생성합니다: ${error.message}`);
+        // 기존 데이터 조회에 실패하면 새로 생성
+      }
     }
 
     // 네이버 API 결과를 직접 저장 (계산 로직 제거)
@@ -188,23 +193,37 @@ export class KeywordAnalysisDomainService {
     keyword: Keyword,
     analysisDate: AnalysisDate,
   ): Promise<KeywordAnalysisAggregate> {
-    const [analytics, relatedKeywords, chartData] = await Promise.all([
-      this.keywordDataService.findKeywordAnalyticsByDate(keyword, analysisDate),
-      this.keywordDataService.findRelatedKeywords(keyword, analysisDate),
-      this.chartDataService.getChartData(keyword, analysisDate),
-    ]);
+    console.log(`🔍 기존 분석 데이터 조회 시작: ${keyword.value} (${analysisDate.value})`);
+    
+    try {
+      const [analytics, relatedKeywords, chartData] = await Promise.all([
+        this.keywordDataService.findKeywordAnalyticsByDate(keyword, analysisDate),
+        this.keywordDataService.findRelatedKeywords(keyword, analysisDate),
+        this.chartDataService.getChartData(keyword, analysisDate),
+      ]);
 
-    if (!analytics) {
-      throw new Error(`키워드 '${keyword.value}'의 분석 데이터를 찾을 수 없습니다.`);
+      console.log(`🔍 기존 데이터 조회 결과:`, {
+        analytics: analytics ? `존재 (ID: ${analytics.id})` : '없음',
+        relatedKeywordsCount: relatedKeywords?.length || 0,
+        chartDataSearchTrends: chartData?.searchTrends?.length || 0,
+        chartDataMonthlyRatios: chartData?.monthlyRatios?.length || 0,
+      });
+
+      if (!analytics) {
+        throw new Error(`키워드 '${keyword.value}'의 분석 데이터를 찾을 수 없습니다.`);
+      }
+
+      return new KeywordAnalysisAggregate(
+        keyword,
+        analysisDate,
+        analytics,
+        relatedKeywords,
+        chartData,
+      );
+    } catch (error) {
+      console.error(`❌ 기존 분석 데이터 조회 실패: ${keyword.value}`, error);
+      throw error;
     }
-
-    return new KeywordAnalysisAggregate(
-      keyword,
-      analysisDate,
-      analytics,
-      relatedKeywords,
-      chartData,
-    );
   }
 
   // 키워드 카테고리별 통계 계산

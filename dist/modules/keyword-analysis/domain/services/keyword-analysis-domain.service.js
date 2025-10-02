@@ -27,7 +27,12 @@ let KeywordAnalysisDomainService = class KeywordAnalysisDomainService {
         const existingAnalytics = await this.keywordDataService.findKeywordAnalyticsByDate(keyword, analysisDate);
         if (existingAnalytics) {
             console.log(`⚠️ 키워드 '${keywordValue}'에 대한 분석 데이터가 이미 존재합니다. 기존 데이터를 반환합니다.`);
-            return await this.getExistingAnalysis(keyword, analysisDate);
+            try {
+                return await this.getExistingAnalysis(keyword, analysisDate);
+            }
+            catch (error) {
+                console.warn(`⚠️ 기존 데이터 조회 실패, 새로 생성합니다: ${error.message}`);
+            }
         }
         const analytics = await this.keywordDataService.saveKeywordAnalytics(keyword, analysisDate, naverApiData);
         const relatedKeywords = await this.keywordDataService.saveRelatedKeywords(keyword, analysisDate, relatedKeywordsData || []);
@@ -120,15 +125,28 @@ let KeywordAnalysisDomainService = class KeywordAnalysisDomainService {
         }
     }
     async getExistingAnalysis(keyword, analysisDate) {
-        const [analytics, relatedKeywords, chartData] = await Promise.all([
-            this.keywordDataService.findKeywordAnalyticsByDate(keyword, analysisDate),
-            this.keywordDataService.findRelatedKeywords(keyword, analysisDate),
-            this.chartDataService.getChartData(keyword, analysisDate),
-        ]);
-        if (!analytics) {
-            throw new Error(`키워드 '${keyword.value}'의 분석 데이터를 찾을 수 없습니다.`);
+        console.log(`🔍 기존 분석 데이터 조회 시작: ${keyword.value} (${analysisDate.value})`);
+        try {
+            const [analytics, relatedKeywords, chartData] = await Promise.all([
+                this.keywordDataService.findKeywordAnalyticsByDate(keyword, analysisDate),
+                this.keywordDataService.findRelatedKeywords(keyword, analysisDate),
+                this.chartDataService.getChartData(keyword, analysisDate),
+            ]);
+            console.log(`🔍 기존 데이터 조회 결과:`, {
+                analytics: analytics ? `존재 (ID: ${analytics.id})` : '없음',
+                relatedKeywordsCount: relatedKeywords?.length || 0,
+                chartDataSearchTrends: chartData?.searchTrends?.length || 0,
+                chartDataMonthlyRatios: chartData?.monthlyRatios?.length || 0,
+            });
+            if (!analytics) {
+                throw new Error(`키워드 '${keyword.value}'의 분석 데이터를 찾을 수 없습니다.`);
+            }
+            return new keyword_analysis_aggregate_1.KeywordAnalysisAggregate(keyword, analysisDate, analytics, relatedKeywords, chartData);
         }
-        return new keyword_analysis_aggregate_1.KeywordAnalysisAggregate(keyword, analysisDate, analytics, relatedKeywords, chartData);
+        catch (error) {
+            console.error(`❌ 기존 분석 데이터 조회 실패: ${keyword.value}`, error);
+            throw error;
+        }
     }
     categorizeKeywords(keywords) {
         return keywords.reduce((acc, keyword) => {
